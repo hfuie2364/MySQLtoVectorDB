@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: mysql-to-milvus
+  datasource:
+    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/CLVS_QA_TEST?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8}
+    username: ${MYSQL_USERNAME:}
+    password: ${MYSQL_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: 8080
+
+embedding:
+  endpoint: ${EMBEDDING_ENDPOINT:}
+  api-key: ${EMBEDDING_API_KEY:}
+
+qa-source:
+  table-name: qa_data
+  limit: 1000
+  columns:
+    qa-id: qa_id
+    company-id: company_id
+    question: question
+    answer-text: answer_text
+
+milvus:
+  host: ${MILVUS_HOST:localhost}
+  port: ${MILVUS_PORT:19530}
+  collection-name: ${MILVUS_COLLECTION_NAME:moon_test}
+  query-limit: 1000
+  fields:
+    vector: question_vector
+    question-text: question_text
+    answer-text: answer_text
+    company-id: company_id
+  max-length:
+    question-text: 2000
+    answer-text: 5000
+    company-id: 50
+
+ingest:
+  batch-size: 50

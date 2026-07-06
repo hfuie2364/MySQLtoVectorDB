@@ -1,0 +1,12 @@
+.vscode/
+.idea/
+
+mysql-to-milvus/target/
+mysql-to-milvus/.mvn/wrapper/maven-wrapper.jar
+
+*.log
+*.tmp
+*.bak
+
+.env
+*.env
