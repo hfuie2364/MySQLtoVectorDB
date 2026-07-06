@@ -81,8 +81,8 @@ public class QaController {
     ) {
         this.jdbcTemplate = jdbcTemplate;
         this.collectionName = requireText(collectionName, "milvus.collection-name");
-        this.embeddingEndpoint = requireText(embeddingEndpoint, "embedding.endpoint");
-        this.embeddingApiKey = requireText(embeddingApiKey, "embedding.api-key");
+        this.embeddingEndpoint = embeddingEndpoint == null ? "" : embeddingEndpoint;
+        this.embeddingApiKey = embeddingApiKey == null ? "" : embeddingApiKey;
         this.qaTableName = requireText(qaTableName, "qa-source.table-name");
         this.qaIdColumn = requireText(qaIdColumn, "qa-source.columns.qa-id");
         this.companyIdColumn = requireText(companyIdColumn, "qa-source.columns.company-id");
@@ -315,12 +315,14 @@ public class QaController {
 
     private List<List<Float>> embedBatch(List<String> texts) {
         try {
+            String endpoint = requireText(embeddingEndpoint, "embedding.endpoint");
+            String apiKey = requireText(embeddingApiKey, "embedding.api-key");
             String requestBody = objectMapper.writeValueAsString(new EmbeddingBatchRequest(texts));
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(embeddingEndpoint))
+                    .uri(URI.create(endpoint))
                     .header("Content-Type", "application/json")
-                    .header("X-Api-Key", embeddingApiKey)
+                    .header("X-Api-Key", apiKey)
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
 

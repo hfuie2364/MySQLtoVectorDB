@@ -10,3 +10,4 @@ mysql-to-milvus/.mvn/wrapper/maven-wrapper.jar
 
 .env
 *.env
+mysql-to-milvus/src/main/resources/application-local.yml

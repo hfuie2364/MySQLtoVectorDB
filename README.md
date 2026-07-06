@@ -43,6 +43,8 @@ $env:MILVUS_PORT="19530"
 $env:MILVUS_COLLECTION_NAME="moon_test"
 ```
 
+For local development, you can also create `mysql-to-milvus/src/main/resources/application-local.yml` and run with `--spring-boot.run.profiles=local`. This file is ignored by Git.
+
 The MySQL table/column mapping, Milvus field mapping, query limits, max string lengths, and ingest batch size are also configurable in `application.yml`.
 
 ## Run
