@@ -1,6 +1,8 @@
 spring:
   application:
     name: mysql-to-milvus
+  config:
+    import: optional:classpath:application-local.yml
   datasource:
     url: ${MYSQL_URL:jdbc:mysql://localhost:3306/CLVS_QA_TEST?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8}
     username: ${MYSQL_USERNAME:}
@@ -27,6 +29,8 @@ milvus:
   host: ${MILVUS_HOST:localhost}
   port: ${MILVUS_PORT:19530}
   collection-name: ${MILVUS_COLLECTION_NAME:moon_test}
+  connect-timeout-seconds: 5
+  rpc-deadline-seconds: 10
   query-limit: 1000
   fields:
     vector: question_vector

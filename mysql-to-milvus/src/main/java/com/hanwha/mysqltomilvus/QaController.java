@@ -17,7 +17,9 @@ import io.milvus.param.dml.InsertParam;
 import io.milvus.param.dml.QueryParam;
 import io.milvus.response.QueryResultsWrapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 public class QaController {
@@ -61,6 +64,8 @@ public class QaController {
             @Value("${milvus.host}") String milvusHost,
             @Value("${milvus.port}") Integer milvusPort,
             @Value("${milvus.collection-name}") String collectionName,
+            @Value("${milvus.connect-timeout-seconds}") Integer milvusConnectTimeoutSeconds,
+            @Value("${milvus.rpc-deadline-seconds}") Integer milvusRpcDeadlineSeconds,
             @Value("${embedding.endpoint}") String embeddingEndpoint,
             @Value("${embedding.api-key}") String embeddingApiKey,
             @Value("${qa-source.table-name}") String qaTableName,
@@ -102,8 +107,22 @@ public class QaController {
                 ConnectParam.newBuilder()
                         .withHost(milvusHost)
                         .withPort(milvusPort)
+                        .withConnectTimeout(
+                                requirePositive(milvusConnectTimeoutSeconds, "milvus.connect-timeout-seconds"),
+                                TimeUnit.SECONDS
+                        )
+                        .withRpcDeadline(
+                                requirePositive(milvusRpcDeadlineSeconds, "milvus.rpc-deadline-seconds"),
+                                TimeUnit.SECONDS
+                        )
                         .build()
         );
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleException(Exception e) {
+        String message = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+        return ResponseEntity.internalServerError().body(new ApiError(message));
     }
 
     @GetMapping("/qa")
@@ -412,4 +431,7 @@ record QaData(Long qaId, Integer companyId, String question, String answerText) 
 }
 
 record EmbeddingBatchRequest(List<String> input) {
+}
+
+record ApiError(String message) {
 }
